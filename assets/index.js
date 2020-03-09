@@ -1,8 +1,14 @@
-const { nacl } = window; // should already be attached to the window
+const { nacl, Base64 } = window; // should already be attached to the window
 
 class Main {
   setNonceAndKey(nonce, key) {
     // set in url hash
+    window.location.hash = Base64.encode(
+      JSON.stringify({
+        nonce: nacl.util.encodeBase64(nonce),
+        key: nacl.util.encodeBase64(key)
+      })
+    );
   }
 
   loadNonceAndKey() {
@@ -13,6 +19,9 @@ class Main {
       nonce = nacl.randomBytes(nacl.secretbox.nonceLength);
     } else {
       // read from url hash
+      const json = JSON.parse(Base64.decode(window.location.hash));
+      nonce = nacl.util.decodeBase64(json.nonce);
+      key = nacl.util.decodeBase64(json.key);
     }
 
     return {

@@ -16,5 +16,6 @@ existing ones dont work for me
 
 todo
 how to set this up
-hhvm -m server -p 8080
+hhvm -m server -p 8080 -d hhvm.server.error_document404=index.php
+
 implement my requirements
