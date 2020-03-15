@@ -1,3 +1,0 @@
-echo (
-  <div>ABOUT</div>
-)

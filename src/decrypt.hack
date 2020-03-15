@@ -1,3 +1,0 @@
-echo(
-<div> decrypt....</div>
-);
