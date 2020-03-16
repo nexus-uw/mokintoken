@@ -72,14 +72,24 @@ class Main {
 
         const newNoteForm = document.getElementById('newNoteForm')
         newNoteForm.addEventListener('submit', async e => {
-            await fetch({
-                url: '/save-note',
+
+            e.preventDefault()
+
+            await fetch('/api/save-note', {
+
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     encryptedText: this.encryptedtext.value
                 })
             })
-            e.preventDefault()
+
+            // todo: show share info with the ID generated from the api
+
+
+            return false
 
         })
     }

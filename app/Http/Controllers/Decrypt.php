@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Note;
+
+
 class Decrypt extends Controller
 {
     /**
@@ -14,6 +17,10 @@ class Decrypt extends Controller
      */
     public function __invoke($id)
     {
-        return view('decrypt',['encryptedText' => 'aIyYebVLEOhA37SIO6vTclISsaa4S9jibyZMAHkQQD/w2g4tLrdldg8=']);
+        $note = Note::where('id', $id)->first();
+        // todo check for expiry datetime or view count
+        // if expired + view too much. delete + return info (either not found or deleted)
+        // else inc view count by 1
+        return view('decrypt',['encryptedText' => $note->encryptedText]);
     }
 }

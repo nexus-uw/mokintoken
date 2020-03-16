@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Note;
 
 class SaveNote extends Controller
 {
@@ -14,6 +15,15 @@ class SaveNote extends Controller
      */
     public function __invoke(Request $request)
     {
-        $encryptedText = $request->input('encryptedText');
+
+        $note = new Note;
+        $note->encryptedText = $request->input('encryptedText');
+        // todo add max view count and/or expiry datetime
+        $note->id = uniqid();
+        $note->save();
+
+        return response()->json([
+            'id'=>$note->id
+        ]);
     }
 }
