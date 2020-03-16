@@ -3,3 +3,7 @@ vendor
 
 www.pid
 node_modules
+
+# auto build
+public/js
+public/css
