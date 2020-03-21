@@ -61,10 +61,15 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            .share{
+                display: 'none';
+            }
         </style>
     </head>
     <body>
     <div>
+    <div id="newNote">
         <form method="POST" id="newNoteForm">
           <label>key</label><input id="key" readonly="true" />
           <label>nonce</label><input id="nonce" readonly="true" />
@@ -73,6 +78,12 @@
           <label>decryptedtext text</label><textarea id="decryptedtext" disabled="true" ></textarea>
           <button type="submit" >submit</button>
         </form>
+    </div>
+    <div id="share">
+        <h1>note successfully encrypted and ready to share</h1>
+        <div>either share this link <a id="shareLink">holla</a></div>
+        <div>or this QR code <img id="shareQR"></img></div>
+    </div>
 
         <script src="/js/app.js" ></script>
     </body>
