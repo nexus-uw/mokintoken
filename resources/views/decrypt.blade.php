@@ -1,10 +1,13 @@
 
+@extends('layouts.app')
 
-<html>
-<body>
 
-          <textarea id="encryptedtext" name="encryptedtext" style="display:none;">{{$encryptedText}}</textarea>
-          <label>decryptedtext text</label><textarea id="decryptedtext" readonly="true" ></textarea>
-        <script type="module" src="/index.js" ></script>
-</body>
-</html>
+@section('content')
+<div class="pb7">
+  <textarea id="encryptedtext" name="encryptedtext" style="display:none;">{{$encryptedText}}</textarea>
+  <div class="pa3 bg-white black br2">
+    <h4>Decrypted Text</h4>
+    <p id="decryptedtext" readonly="true" class="w-100 ba bw2 b--black-30" ></p>
+  </div>
+</div>
+@endsection

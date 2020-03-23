@@ -1,3 +1,10 @@
+@extends('layouts.app')
+
+
+@section('content')
+
+
+
 about
 MokinToken
 2 things that were on my desk when i came up with the repo name
@@ -23,3 +30,5 @@ issues:
 - trustworthy -> NOPE
 - proffessional -> NOPE
 - PHP...
+
+@endsection

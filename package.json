@@ -1,27 +1,30 @@
 {
-    "name": "blog",
-    "version": "1.0.0",
-    "description": "[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework) [![Total Downloads](https://poser.pugx.org/laravel/lumen-framework/d/total.svg)](https://packagist.org/packages/laravel/lumen-framework) [![Latest Stable Version](https://poser.pugx.org/laravel/lumen-framework/v/stable.svg)](https://packagist.org/packages/laravel/lumen-framework) [![License](https://poser.pugx.org/laravel/lumen-framework/license.svg)](https://packagist.org/packages/laravel/lumen-framework)",
-    "main": "index.js",
-    "directories": {
-        "test": "tests"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "",
-    "license": "ISC",
-    "devDependencies": {
-        "@rollup/plugin-commonjs": "^11.0.2",
-        "@rollup/plugin-node-resolve": "^7.1.1",
-        "rollup": "^2.1.0",
-        "rollup-plugin-node-builtins": "^2.1.2"
-    },
-    "dependencies": {
-        "js-base64": "^2.5.2",
-        "qrcode": "^1.4.4",
-        "rollup-plugin-node-globals": "^1.4.0",
-        "tweetnacl": "^1.0.3",
-        "tweetnacl-util": "^0.15.1"
-    }
+  "name": "mokintoken",
+  "version": "2.0.77",
+  "description": "[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework) [![Total Downloads](https://poser.pugx.org/laravel/lumen-framework/d/total.svg)](https://packagist.org/packages/laravel/lumen-framework) [![Latest Stable Version](https://poser.pugx.org/laravel/lumen-framework/v/stable.svg)](https://packagist.org/packages/laravel/lumen-framework) [![License](https://poser.pugx.org/laravel/lumen-framework/license.svg)](https://packagist.org/packages/laravel/lumen-framework)",
+  "main": "index.js",
+  "private": true,
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup --config && cp node_modules/tachyons/css/tachyons.min.css public"
+  },
+  "author": "",
+  "license": "Unlicense",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "rollup": "^2.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.4.0"
+  },
+  "dependencies": {
+    "js-base64": "^2.5.2",
+    "qrcode": "^1.4.4",
+    "tachyons": "^4.11.1",
+    "tweetnacl": "^1.0.3",
+    "tweetnacl-util": "^0.15.1"
+  }
 }

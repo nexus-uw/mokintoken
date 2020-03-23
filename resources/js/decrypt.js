@@ -30,7 +30,7 @@ export class Decrypt {
     const { nonce, key } = this.loadNonceAndKey()
 
     // debugging only, remove once ready
-    this.decryptedtext.value = naclUutil.encodeUTF8(
+    this.decryptedtext.innerText = naclUutil.encodeUTF8(
       nacl.secretbox.open(
         naclUutil.decodeBase64(this.encryptedtext.value),
         nonce,

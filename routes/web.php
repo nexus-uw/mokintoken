@@ -11,8 +11,12 @@
 |
 */
 
-$router->get('/', function () use ($router) {
+$router->get('/', function () {
     return view('welcome');
+});
+
+$router->get('/about', function () {
+    return view('about');
 });
 
 
