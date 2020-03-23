@@ -1,9 +1,8 @@
-# stuff installed by compose
-vendor
-
-www.pid
+/vendor
+/.idea
+Homestead.json
+Homestead.yaml
+.env
+.phpunit.result.cache
 node_modules
-
-# auto build
-public/js
-public/css
+public/*
