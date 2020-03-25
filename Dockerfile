@@ -16,12 +16,10 @@ WORKDIR /var/www
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-  curl
+  curl git zip unzip
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-RUN apt-get remove -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #change to run on 8080 so that non-root user can start the server.
 COPY mokintoken.conf /etc/apache2/sites-available/000-default.conf
@@ -32,13 +30,15 @@ RUN  a2enmod rewrite
 RUN groupadd -g 1000 mokintoken
 RUN useradd -u 1000 -ms /bin/bash -g mokintoken mokintoken
 
-COPY . /var/www
-COPY --from=JSBUILD public/* public/
-COPY --chown=mokintoken:mokintoken . /var/www
+COPY --chown=mokintoken:mokintoken . .
+RUN composer install
+COPY --from=JSBUILD --chown=mokintoken:mokintoken public/* public/
+RUN apt-get remove -y curl git zip unzip && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+
 
 ENV APACHE_RUN_USER=mokintoken
 USER mokintoken
 
 EXPOSE 8080
-#todo confirm
 VOLUME /var/www/database
