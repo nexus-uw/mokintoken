@@ -1,6 +1,11 @@
 # TODO build JS code seperately.....
+FROM node:12-alpine as JSBUILD
+COPY package.json package-lock.json rollup.config.js ./
+RUN npm ci
+COPY resources/js resources/js
+RUN npm run build
 
-FROM  php:7-apache
+FROM  php:7-apache as MAIN
 
 
 # Copy composer.lock and composer.json
@@ -28,6 +33,7 @@ RUN groupadd -g 1000 mokintoken
 RUN useradd -u 1000 -ms /bin/bash -g mokintoken mokintoken
 
 COPY . /var/www
+COPY --from=JSBUILD public/* public/
 COPY --chown=mokintoken:mokintoken . /var/www
 
 ENV APACHE_RUN_USER=mokintoken
@@ -35,4 +41,4 @@ USER mokintoken
 
 EXPOSE 8080
 #todo confirm
-VOLUME /var/www/database/database.sqlite
+VOLUME /var/www/database
