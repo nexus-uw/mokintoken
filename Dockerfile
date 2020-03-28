@@ -1,4 +1,3 @@
-# TODO build JS code seperately.....
 FROM node:12-alpine as JSBUILD
 COPY package.json package-lock.json rollup.config.js ./
 RUN npm ci

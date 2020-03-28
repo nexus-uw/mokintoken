@@ -1,52 +1,40 @@
 # mokintoken
 
-why
+![](https://dockeri.co/image/nexusuw/mokintoken)
 
-existing ones dont work for me
+## what
 
-    i want qr code support
-    i dont want a big db
-    i want an auto-built docker image
-    i want to be able to host on azure or google cloud.....
-    i dont want a bunch of JS
+a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, rollup, and docker.
 
-todo how to set this up hhvm -m server -p 8080 -d hhvm.server.error_document404=index.php
+[(todo) announcement blog post]()
 
-implement my requirements
+## where
 
-sudo apt install php-sqlite3 php-mbstring php-7
-php artisan migrate
-php -S 0.0.0.0:8000 -t public
+[https://mokintoken.ramsay.xyz](https://mokintoken.ramsay.xyz/?ref=readme)
 
-npm + rollup
+[(todo) onion]()
 
-docker
+## how to self host
 
-hhvm
+```
+touch database.sqlite
+docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqlite nexusuw/mokintoken
+```
 
-2 dockercontainer setup (http server + fastcgi)
+## local setup
 
-# Lumen PHP Framework
+1. `sudo apt-get install php-sqlite3 php-mbstring php-7`
+2. [install nodejs](https://nodejs.org/en/download/package-manager/)
+3. [install composer](https://getcomposer.org/download/)
+4. `composer install`
+5. `npm install`
+6. `php artisan migrate`
+7. `npm run build`
+8. `php -S 0.0.0.0:8000 -t public`
+9. `npm run watch`
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://poser.pugx.org/laravel/lumen-framework/d/total.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/lumen-framework/v/stable.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://poser.pugx.org/laravel/lumen-framework/license.svg)](https://packagist.org/packages/laravel/lumen-framework)
+## todo
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
-
-## Official Documentation
-
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
-
-## Contributing
-
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- slim down docker container size
+- publish multiple archs for containers
+- expire old notes

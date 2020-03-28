@@ -2,13 +2,11 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
   <head>
     <title>MokinToken: secure note sharing for the 2077 normalization</title>
-
+    <meta name="description" content="selfhosted e2e encrypted note sharing webapp"/>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/tachyons.min.css" />
     <meta charset="utf-8" />
-    <style>
 
-    </style>
     <style>
       #share{
         display: none;
@@ -16,6 +14,7 @@
     </style>
   </head>
   <body class="code ">
+    <noscript>JS is required to do anything with this site...</noscript>
     <div class="center measure-wide">
       <h1 class="f-subheadline-ns f1  lh-solid mt0 mb3">MokinToken</h1>
       <h2 class=" mt0 fw3">secure note sharing for the 2077 normalization</h2>
