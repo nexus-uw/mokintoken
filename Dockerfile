@@ -40,4 +40,4 @@ ENV APACHE_RUN_USER=mokintoken
 USER mokintoken
 
 EXPOSE 8080
-VOLUME /var/www/database
+VOLUME /var/www/database/database.sqilte

@@ -3,3 +3,4 @@ Dockerfile
 nginx.conf
 docker-compose.yml
 vendor
+database/database.sqilte
