@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup --config && cp node_modules/tachyons/css/tachyons.min.css public",
-    "dev":"rollup --config -w"
+    "dev": "rollup --config -w"
   },
   "author": "",
   "license": "Unlicense",

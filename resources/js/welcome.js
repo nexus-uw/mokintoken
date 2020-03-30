@@ -5,25 +5,10 @@ import QRCode from 'qrcode'
 
 export class Welcome {
   loadNonceAndKey() {
+    window.location.hash = '' // clear out old key
     // always generate new nonce
     const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
-
-    let key
-    if (!window.location.hash || window.location.hash === '') {
-      key = nacl.randomBytes(nacl.secretbox.keyLength)
-    } else {
-      // read from url hash
-      const json = JSON.parse(Base64.decode(window.location.hash))
-      key = naclUutil.decodeBase64(json.key)
-    }
-
-    // set in url hash
-    window.location.hash = Base64.encode(
-      JSON.stringify({
-        nonce: naclUutil.encodeBase64(nonce),
-        key: naclUutil.encodeBase64(key)
-      })
-    )
+    const key = nacl.randomBytes(nacl.secretbox.keyLength)
 
     return {
       nonce,
@@ -37,6 +22,7 @@ export class Welcome {
     const newNoteForm = document.getElementById('newNoteForm')
     newNoteForm.addEventListener('submit', async e => {
       e.preventDefault()
+      document.getElementById('submit').disabled = true
       try {
         const f = await fetch('/api/save-note', {
           method: 'POST',
@@ -50,21 +36,29 @@ export class Welcome {
                 nonce,
                 key
               )
-            )
+            ),
+            expiresHours: document.getElementById('expiresHours').value,
+            expiresViews: document.getElementById('expiresViews').value
           })
         })
 
         const { id } = await f.json()
-
         document.getElementById('newNote').style.display = 'none'
         document.getElementById('share').style.display = 'initial'
-        const shareLink = `${location.protocol}//${location.host}/decrypt/${id}${location.hash}`
+        const hash = Base64.encode(
+          JSON.stringify({
+            nonce: naclUutil.encodeBase64(nonce),
+            key: naclUutil.encodeBase64(key)
+          })
+        )
+        const shareLink = `${location.protocol}//${location.host}/decrypt/${id}#${hash}`
         document.getElementById('shareLink').href = shareLink
 
         await QRCode.toCanvas(document.getElementById('shareQR'), shareLink)
       } catch (e) {
-        console.error('failed to save note', e)
+         alert('failed to save note: ' + e)
       }
+      document.getElementById('submit').disabled = false
       return false
     })
   }

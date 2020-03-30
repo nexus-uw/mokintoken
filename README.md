@@ -6,7 +6,7 @@
 
 a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, rollup, and docker.
 
-[(todo) announcement blog post]()
+[announcement blog post](https://ramsay.xyz/2020/03/27/mokintoken-released.html)
 
 ## where
 
@@ -32,7 +32,7 @@ docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqli
 6. `php artisan migrate`
 7. `npm run build`
 8. `php -S 0.0.0.0:8000 -t public`
-9. `npm run watch`
+9. `npm run dev`
 
 ## todo
 

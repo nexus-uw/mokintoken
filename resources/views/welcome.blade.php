@@ -9,6 +9,19 @@
       "25"></textarea>
     </div>
     <div>
+    <div  class="pa3 bg-white black br2">
+      <label for="expiresHours">expire in hours: </label>
+      <input id="expiresHours" type="number" value="48" min="0"></input>
+    </div>
+    <div class="pa3 bg-white black br2">
+    and/or
+    </div>
+    <div  class="pa3 bg-white black br2">
+      <label for="expiresViews" >expire after number of views:</label>
+      <input id="expiresViews" type="number" value="2" min="0"></input>
+    </div>
+    </div>
+    <div>
       <button id="submit" class="grow w-100 ba bw2 ">encrypt and submit</button>
     </div>
   </form>
