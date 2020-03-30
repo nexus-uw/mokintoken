@@ -10,14 +10,14 @@
     </div>
     <div>
     <div  class="pa3 bg-white black br2">
-      <label for="expiresHours">expire in hours: </label>
+      <label for="expiresHours">expire note after X hours: </label>
       <input id="expiresHours" type="number" value="48" min="0"></input>
     </div>
     <div class="pa3 bg-white black br2">
     and/or
     </div>
     <div  class="pa3 bg-white black br2">
-      <label for="expiresViews" >expire after number of views:</label>
+      <label for="expiresViews" >expire note after X number of views:</label>
       <input id="expiresViews" type="number" value="2" min="0"></input>
     </div>
     </div>
@@ -26,10 +26,11 @@
     </div>
   </form>
 </div>
-<div id="share">
+<div id="share" class="tc">
   <h1>note successfully encrypted and ready to share</h1>
-  <div>either share this link <a id="shareLink" target="_blank">holla</a>or this QR code</div>
+  <h4>either share  <a id="shareLink" target="_blank" style="margin-right: 7px;">this link</a></h4>
   <div class="db"> <canvas id="shareQR" style="display:block; margin: auto;"></canvas></div>
+  <h5>or this QR code</h5>
 </div>
 
 @endsection

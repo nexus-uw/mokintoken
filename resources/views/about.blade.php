@@ -54,7 +54,7 @@ proffessional -> NOPE
 </ul>
 </div>
 
-<h2>alternative</h2>
+<h2>alternatives</h2>
 <p>
 <a href="https://github.com/awesome-selfhosted/awesome-selfhosted#custom-communication-systems">self host your own e2e encrypted chat application for just yourself and your devices</a>
 </p>
