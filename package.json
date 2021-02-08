@@ -24,7 +24,7 @@
   "dependencies": {
     "js-base64": "^2.6.0",
     "qrcode": "^1.4.4",
-    "tachyons": "^4.11.1",
+    "tachyons": "^4.12.0",
     "tweetnacl": "^1.0.3",
     "tweetnacl-util": "^0.15.1"
   }
