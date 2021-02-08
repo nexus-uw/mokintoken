@@ -22,7 +22,7 @@
     "rollup-plugin-node-globals": "^1.4.0"
   },
   "dependencies": {
-    "js-base64": "^2.5.2",
+    "js-base64": "^2.6.0",
     "qrcode": "^1.4.4",
     "tachyons": "^4.11.1",
     "tweetnacl": "^1.0.3",
