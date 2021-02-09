@@ -38,6 +38,4 @@ docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqli
 
 - slim down docker container size
 - publish multiple archs for containers
-- expire old notes
 - password protect notes
-- max view count
