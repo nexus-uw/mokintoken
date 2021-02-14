@@ -20,5 +20,5 @@ jobs:
       - name: build the image
         run: |
           docker buildx build \
-          --tag nexus-uw/mokintoken:latest \
+          --tag nexusuw/mokintoken:latest \
           --platform linux/amd64,linux/arm/v7,linux/arm64 .
