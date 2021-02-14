@@ -12,7 +12,7 @@ a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, roll
 
 [https://mokintoken.ramsay.xyz](https://mokintoken.ramsay.xyz/?ref=readme)
 
-[(todo) onion]()
+[onion](http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion/)
 
 ## how to self host
 
@@ -31,7 +31,7 @@ docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqli
 5. `npm install`
 6. `php artisan migrate`
 7. `npm run build`
-8. `php -S 0.0.0.0:8000 -t public`
+8. `php -S 0.0.0.0:8080 -t public`
 9. `npm run dev`
 
 ## todo
