@@ -26,7 +26,7 @@
       </div>
     </div>
     <footer class="pv4 mv4 bt center tc">
-        2020 - CURRENT YEAR <a href="https://unlicense.org/">Unlicensed</a> | Another project by <a href="https://ramsay.xyz">Simon Ramsay</a> | <a href="https://github.com/nexus-uw/mokintoken">CODE</a>
+        <a href="http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion" > TOR </a> | 2020 - CURRENT YEAR <a href="https://unlicense.org/">Unlicensed</a> | Another project by <a href="https://ramsay.xyz/?ref=mokintoken">Simon Ramsay</a> | <a href="https://github.com/nexus-uw/mokintoken">CODE</a>
 
     </footer>
     <script type="module" src="/index.js" ></script>
