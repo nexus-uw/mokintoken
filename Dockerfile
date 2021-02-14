@@ -1,10 +1,10 @@
-FROM node:12-alpine as JSBUILD
+FROM --platform=$BUILDPLATFORM node:14-alpine as JSBUILD
 COPY package.json package-lock.json rollup.config.js ./
 RUN npm ci
 COPY resources/js resources/js
 RUN npm run build
 
-FROM  php:7-apache as MAIN
+FROM  --platform=$TARGETPLATFORM php:7-apache as MAIN
 
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
