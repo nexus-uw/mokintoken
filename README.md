@@ -37,5 +37,9 @@ docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqli
 ## todo
 
 - slim down docker container size
-- publish multiple archs for containers
-- password protect notes
+- password protect notes (double encryption but stops someone from stumbling onto the contents if they just have the url)
+- ratelimit
+- replace php with golang (or something else)
+- allow uploading of images/files
+- turn off server logging?
+- inline CSP to html

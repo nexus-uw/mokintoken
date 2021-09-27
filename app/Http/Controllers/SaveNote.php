@@ -17,6 +17,7 @@ class SaveNote extends Controller
      */
     public function __invoke(Request $request)
     {
+        // TODO: validate expiresViews + expiresHours
         $expiresViews = $request->input('expiresViews');
 
         $expires = new \DateTime();
@@ -25,7 +26,6 @@ class SaveNote extends Controller
         $note = new Note;
         $note->encryptedText = $request->input('encryptedText');
         $note->expiry = $expires;
-        // todo add max view count and/or expiry datetime
         $note->id = uniqid();
         $note->viewCount = 0;
         $note->save();

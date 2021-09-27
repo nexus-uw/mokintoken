@@ -11,14 +11,14 @@
     <div>
     <div  class="pa3 bg-white black br2">
       <label for="expiresHours">expire note after X hours: </label>
-      <input id="expiresHours" type="number" value="48" min="0"></input>
+      <input id="expiresHours" type="number" value="1" min="1"></input>
     </div>
     <div class="pa3 bg-white black br2">
     and/or
     </div>
     <div  class="pa3 bg-white black br2">
       <label for="expiresViews" >expire note after X number of views:</label>
-      <input id="expiresViews" type="number" value="2" min="0"></input>
+      <input id="expiresViews" type="number" value="1" min="1"></input>
     </div>
     </div>
     <div>
