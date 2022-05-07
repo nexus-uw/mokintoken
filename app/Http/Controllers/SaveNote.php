@@ -17,8 +17,12 @@ class SaveNote extends Controller
      */
     public function __invoke(Request $request)
     {
-        // TODO: validate expiresViews + expiresHours
         $expiresViews = $request->input('expiresViews');
+
+        if ($expiresViews < 1){
+          return response()->json([
+            'message' => 'invalid expiresViews'], 404);
+        }
 
         $expires = new \DateTime();
         $expires->add(new \DateInterval(\sprintf('PT%dH', $request->input('expiresHours'))));
@@ -28,6 +32,7 @@ class SaveNote extends Controller
         $note->expiry = $expires;
         $note->id = uniqid();
         $note->viewCount = 0;
+        $note->expiresViews = $expiresViews;
         $note->save();
 
         return response()->json([

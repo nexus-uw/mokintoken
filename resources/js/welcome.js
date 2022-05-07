@@ -51,10 +51,17 @@ export class Welcome {
             key: naclUutil.encodeBase64(key)
           })
         )
-        const shareLink = `${location.protocol}//${location.host}/decrypt/${id}#${hash}`
-        document.getElementById('shareLink').href = shareLink
 
-        await QRCode.toCanvas(document.getElementById('shareQR'), shareLink)
+        const clearnetShareLink = `${document.querySelector('meta[name="clearnet"]').getAttribute('content')}/decrypt/${id}#${hash}`
+        document.getElementById('clearnetShareLink').href = clearnetShareLink
+
+        const dakrnetShareLink = `${document.querySelector('meta[name="darknet"]').getAttribute('content')}/decrypt/${id}#${hash}`
+        document.getElementById('dakrnetShareLink').href = dakrnetShareLink
+
+        await Promise.all([
+          QRCode.toCanvas(document.getElementById('clearnetShareQR'), clearnetShareLink),
+          QRCode.toCanvas(document.getElementById('darknetShareQR'), dakrnetShareLink)
+        ])
       } catch (e) {
          alert('failed to save note: ' + e)
       }

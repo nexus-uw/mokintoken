@@ -22,8 +22,6 @@ class Decrypt extends Controller
           )
           ->first();
 
-
-        // todo check for expiry datetime or view count
         // if expired + view too much. delete + return info (either not found or deleted)
         // else inc view count by 1
         if( (!is_null($note)) && ($note->viewCount >= $note->expiresViews || new \DateTime($note->expiry) < new \DateTime("now") ) ){

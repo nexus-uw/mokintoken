@@ -28,9 +28,13 @@
 </div>
 <div id="share" class="tc">
   <h1>note successfully encrypted and ready to share</h1>
-  <h4>either share  <a id="shareLink" target="_blank" style="margin-right: 7px;">this link</a></h4>
-  <div class="db"> <canvas id="shareQR" style="display:block; margin: auto;"></canvas></div>
+  <h4>either share  <a id="clearnetShareLink" target="_blank" style="margin-right: 7px;">this link</a></h4>
+  <div class="db"> <canvas id="clearnetShareQR" style="display:block; margin: auto;"></canvas></div>
   <h5>or this QR code</h5>
+   <hr/>
+   <h4>For hidden service access  <a id="dakrnetShareLink" target="_blank" style="margin-right: 7px;">link</a></h4>
+  <div class="db"> <canvas id="darknetShareQR" style="display:block; margin: auto;"></canvas></div>
+
 </div>
 
 @endsection
