@@ -6,3 +6,5 @@ Homestead.yaml
 .phpunit.result.cache
 node_modules
 public/*
+main
+assets

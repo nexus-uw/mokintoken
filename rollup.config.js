@@ -5,7 +5,7 @@ import globals from 'rollup-plugin-node-globals'
 module.exports = {
   input: 'resources/js/index.js',
   output: {
-    dir: 'public'
+    dir: 'assets'
   },
   plugins: [
     commonjs(),
