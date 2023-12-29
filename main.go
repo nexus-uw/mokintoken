@@ -2,11 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -21,47 +24,47 @@ type Note struct {
 	viewCount     int
 }
 
-func lookUpNote(db *sql.DB, id string) (Note) {
+func lookUpNote(db *sql.DB, id string) Note {
 	row := db.QueryRow("SELECT encryptedText, expiry, expiresViews, viewCount  FROM notes WHERE id = ? LIMIT 1", id)
 	// todo cleanly account for NOT FOUND
 	var (
-	encryptedText string
-	expiry        string
-	expiresViews  int
-	viewCount     int
+		encryptedText string
+		expiry        string
+		expiresViews  int
+		viewCount     int
 	)
-	err := row.Scan(&encryptedText, &expiry, &expiresViews, &viewCount )
+	err := row.Scan(&encryptedText, &expiry, &expiresViews, &viewCount)
 
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 
 	return Note{id, encryptedText, expiry, expiresViews, viewCount}
-	
+
 }
 
-func incrementViews(db *sql.DB, id string)  {
-	_, err:= db.Exec(" TODO id = ?", id)
-	
-	if err != nil{
+func incrementViews(db *sql.DB, id string) {
+	_, err := db.Exec(" TODO id = ?", id)
+
+	if err != nil {
 		panic(err)
 	}
 }
 
-func deleteNote(db *sql.DB, id string)  {
-	_, err:= db.Exec("DELETE FROM notes WHERE id = ?", id)
-	
-	if err != nil{
+func deleteNote(db *sql.DB, id string) {
+	_, err := db.Exec("DELETE FROM notes WHERE id = ?", id)
+
+	if err != nil {
 		panic(err)
 	}
 }
 
-func saveNote(db *sql.DB,encryptedText string, expiry string, expiresViews int) string {
+func saveNote(db *sql.DB, encryptedText string, expiry string, expiresViews int) string {
 	var id = uuid.New().String()
 
-	_, err:= db.Exec("INSERT INTO notes (id, encryptedText, expiry, expiresViews, viewCount) VALUES (?,?, ?,?,?)", id,encryptedText, expiry, expiresViews, 0)
-	
-	if err != nil{
+	_, err := db.Exec("INSERT INTO Notes (id, encryptedText, expiry, expiresViews, viewCount) VALUES (?,?, ?,?,?)", id, encryptedText, expiry, expiresViews, 0)
+
+	if err != nil {
 		panic(err)
 	}
 
@@ -93,18 +96,20 @@ func ass(name string) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func decryptHandler(db *sql.DB) func (w http.ResponseWriter, r *http.Request){
-	return func (w http.ResponseWriter, r *http.Request) {
-		id := r.URL.Path[1:]
+func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ff := strings.Split(r.URL.Path, "/")
+		id := ff[len(ff)-1]
 		// db lookup id
-		note/*, err*/ := lookUpNote(db, id)
+		note /*, err*/ := lookUpNote(db, id)
 
 		/*if err != nil {
 			// todo use nice template
 			http.Error(w, "note not found", http.StatusNotFound)
 			return
 		}*/
-		if (note.expiresViews <= note.viewCount || note.expiry <= fmt.Sprint(time.Now().UTC().UnixMilli()) ){
+		log.Println(note)
+		if note.expiresViews <= note.viewCount || note.expiry <= fmt.Sprint(time.Now().UTC().UnixMilli()) {
 			http.Error(w, "note not found", http.StatusNotFound)
 			return // todo nice template
 		}
@@ -136,10 +141,41 @@ func decryptHandler(db *sql.DB) func (w http.ResponseWriter, r *http.Request){
 	}
 }
 
-func saveNoteHandler(db *sql.DB) func (w http.ResponseWriter, r *http.Request) {
-	return  func (w http.ResponseWriter, r *http.Request){
-		fmt.Fprintf(w, "/api/save-note Hi there, I love %s!", r.URL.Path[1:])
-	 // saveNote
+type NewNote struct {
+	encryptedText string `json:"encryptedText"`
+	expiryString  string `json:"expiryString"`
+	expressViews  string `json:"expressViews"`
+}
+
+func saveNoteHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		decoder := json.NewDecoder(r.Body)
+		
+		var t NewNote
+		err := decoder.Decode(&t)
+		if err != nil {
+			panic(err)
+		}
+		views, _ := strconv.Atoi(t.expressViews)
+		log.Println(t)
+		id := saveNote(db, t.encryptedText, t.expiryString, views)
+		w.Header().Set("Content-Type", "application/json")
+		fmt.Fprintf(w, "{\"id\":\"%s\"}", id) // todo: do real encoding + proper json
+
+	}
+}
+
+func setUpDB(db *sql.DB) {
+	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS Notes
+	(id TEXT PRIMARY KEY,
+	encryptedText TEXT NOT NULL,
+	expiry TEXT NOT NULL,
+	expiresViews INT DEFAULT 2,
+	viewCount INT DEFAULT 0)`)
+	// todo: come up with migration process
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -150,6 +186,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	log.Println(" setting up db")
+	setUpDB(db)
+	log.Println(" db set up")
 
 	http.HandleFunc("/", ass("home"))
 	http.HandleFunc("/about", ass("about"))
