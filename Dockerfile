@@ -4,42 +4,37 @@ RUN npm ci
 COPY resources/js resources/js
 RUN npm run build
 
-FROM  --platform=$TARGETPLATFORM php:7-apache as MAIN
+FROM  --platform=$TARGETPLATFORM golang:1.21 as GOBUILD
+# Force the go compiler to use modules
+ENV GO111MODULE=on
+# Create the user and group files to run unprivileged 
+RUN mkdir /user && \
+    echo 'mokintoken:x:65534:65534:mokintoken:/:' > /user/passwd && \
+    echo 'mokintoken:x:65534:' > /user/group
+#RUN apk update && apk add --no-cache git ca-certificates tzdata  gcc g++  openssh-client
 
-# Use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
-# Copy composer.lock and composer.json
-COPY composer.lock composer.json /var/www/
-
-# Set working directory
-WORKDIR /var/www
-
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-  curl git zip unzip
-
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-#change to run on 8080 so that non-root user can start the server.
-COPY mokintoken.conf /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf
-# https://www.digitalocean.com/community/questions/why-do-my-laravel-routes-not-work
-RUN  a2enmod rewrite
-
-RUN groupadd -g 1000 mokintoken
-RUN useradd -u 1000 -ms /bin/bash -g mokintoken mokintoken
-
-COPY --chown=mokintoken:mokintoken . .
-RUN composer install
-COPY --from=JSBUILD --chown=mokintoken:mokintoken public/* public/
-RUN apt-get remove -y curl git zip unzip && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN mkdir /build 
+COPY . /build/
+WORKDIR /build 
+# Import the code TODO: isolate to only requried go files
+COPY ./ ./ 
+RUN GO111MODULE=on CGO_ENABLED=1 GOOS=linux go build -o mokintoken .
 
 
+FROM alpine AS final
+LABEL author="John Cena"
+# RUN apk add sqlite3 ?
+# Import the user and group files
+COPY --from=GOBUILD /user/group /user/passwd /etc/
+COPY --from=GOBUILD /build/mokintoken /
+COPY --from=JSBUILD --chown=mokintoken:mokintoken assets/* /assets/
+COPY ./views /views
+COPY ./database /database
 
-ENV APACHE_RUN_USER=mokintoken
+WORKDIR /
+
 USER mokintoken
 
 EXPOSE 8080
-VOLUME /var/www/database/database.sqilte
+ENTRYPOINT /mokintoken
+VOLUME /database/mokintoken.sqilte

@@ -24,7 +24,7 @@ type Note struct {
 	viewCount     int
 }
 
-func lookUpNote(db *sql.DB, id string) Note {
+func lookUpNote(db *sql.DB, id string) (Note, error) {
 	row := db.QueryRow("SELECT encryptedText, expiry, expiresViews, viewCount  FROM notes WHERE id = ? LIMIT 1", id)
 	// todo cleanly account for NOT FOUND
 	var (
@@ -35,16 +35,19 @@ func lookUpNote(db *sql.DB, id string) Note {
 	)
 	err := row.Scan(&encryptedText, &expiry, &expiresViews, &viewCount)
 
+	if err == sql.ErrNoRows {
+		return Note{}, err
+	}
 	if err != nil {
 		panic(err)
 	}
 
-	return Note{id, encryptedText, expiry, expiresViews, viewCount}
+	return Note{id, encryptedText, expiry, expiresViews, viewCount}, nil
 
 }
 
-func incrementViews(db *sql.DB, id string) {
-	_, err := db.Exec(" TODO id = ?", id)
+func incrementViews(db *sql.DB, id string, views int) {
+	_, err := db.Exec("UPDATE Notes SET viewCount=? WHERE id=?", views+1, id)
 
 	if err != nil {
 		panic(err)
@@ -52,7 +55,7 @@ func incrementViews(db *sql.DB, id string) {
 }
 
 func deleteNote(db *sql.DB, id string) {
-	_, err := db.Exec("DELETE FROM notes WHERE id = ?", id)
+	_, err := db.Exec("DELETE FROM Notes WHERE id = ?", id)
 
 	if err != nil {
 		panic(err)
@@ -71,7 +74,7 @@ func saveNote(db *sql.DB, encryptedText string, expiry string, expiresViews int)
 	return id
 }
 
-func ass(name string) func(w http.ResponseWriter, r *http.Request) {
+func userViews(name string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Use the template.ParseFiles() function to read the files and store the
 		// templates in a template set. Notice that we use ... to pass the contents
@@ -101,26 +104,30 @@ func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		ff := strings.Split(r.URL.Path, "/")
 		id := ff[len(ff)-1]
 		// db lookup id
-		note /*, err*/ := lookUpNote(db, id)
+		note, err := lookUpNote(db, id)
 
-		/*if err != nil {
-			// todo use nice template
-			http.Error(w, "note not found", http.StatusNotFound)
+		ts1, _ := template.ParseFiles(
+			"./views/template.html",
+			"./views/noteDoesNotExist.html",
+		)
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			ts1.ExecuteTemplate(w, "base", nil)
 			return
-		}*/
-		log.Println(note)
-		if note.expiresViews <= note.viewCount || note.expiry <= fmt.Sprint(time.Now().UTC().UnixMilli()) {
-			http.Error(w, "note not found", http.StatusNotFound)
-			return // todo nice template
 		}
-		// todo: inspect view count + expiry time
-		// if expired, delete note + return 404
-		// else inc view count
-		incrementViews(db, note.id)
+		if note.expiresViews <= note.viewCount || note.expiry <= fmt.Sprint(time.Now().UTC().UnixMilli()) {
+			deleteNote(db, note.id)
+			w.WriteHeader(http.StatusNotFound)
+			ts1.ExecuteTemplate(w, "base", nil)
+			return
+		}
+
+		incrementViews(db, note.id, note.viewCount)
 
 		// Use the template.ParseFiles() function to read the files and store the
 		// templates in a template set. Notice that we use ... to pass the contents
 		// of the files slice as variadic arguments.
+		// todo move up
 		ts, err := template.ParseFiles(
 			"./views/template.html",
 			"./views/decrypt.html",
@@ -142,27 +149,41 @@ func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 }
 
 type NewNote struct {
-	encryptedText string `json:"encryptedText"`
-	expiryString  string `json:"expiryString"`
-	expressViews  string `json:"expressViews"`
+	EncryptedText string `json:"encryptedText"`
+	ExpiresHours  string `json:"expiresHours"`
+	ExpiresViews  string `json:"expiresViews"`
 }
 
 func saveNoteHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		decoder := json.NewDecoder(r.Body)
-		
+
 		var t NewNote
 		err := decoder.Decode(&t)
 		if err != nil {
 			panic(err)
 		}
-		views, _ := strconv.Atoi(t.expressViews)
-		log.Println(t)
-		id := saveNote(db, t.encryptedText, t.expiryString, views)
+		views, _ := strconv.Atoi(t.ExpiresViews)
+		log.Printf("%s ExpiryString=%s ExpressViews=%s", t.EncryptedText, t.ExpiresHours, t.ExpiresViews)
+		expiryHours, _ := strconv.Atoi(t.ExpiresHours)
+		expiry := time.Now().Add(time.Hour * time.Duration(expiryHours))
+		id := saveNote(db, t.EncryptedText, expiry.String(), views)
 		w.Header().Set("Content-Type", "application/json")
+
 		fmt.Fprintf(w, "{\"id\":\"%s\"}", id) // todo: do real encoding + proper json
 
+	}
+}
+
+func ping(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := db.Ping()
+		if err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+
+		fmt.Fprintf(w, "pong")
 	}
 }
 
@@ -181,7 +202,7 @@ func setUpDB(db *sql.DB) {
 
 func main() {
 
-	db, err := sql.Open("sqlite3", "./db.sqlite")
+	db, err := sql.Open("sqlite3", "./database/mokintoken.sqlite")
 
 	if err != nil {
 		panic(err)
@@ -190,16 +211,19 @@ func main() {
 	setUpDB(db)
 	log.Println(" db set up")
 
-	http.HandleFunc("/", ass("home"))
-	http.HandleFunc("/about", ass("about"))
+	http.HandleFunc("/", userViews("home"))
+	http.HandleFunc("/about", userViews("about"))
 	http.HandleFunc("/decrypt/", decryptHandler(db))
 	http.HandleFunc("/api/save-note", saveNoteHandler(db))
+	http.HandleFunc("/ping", ping(db))
+	// this should be handled by a cdn
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+	log.Printf("listening on %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 
 }
