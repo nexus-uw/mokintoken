@@ -36,3 +36,4 @@ docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqli
 - turn off server logging?
 - inline CSP to html
 - load test
+- generate sha-BLAH during build and include in csp

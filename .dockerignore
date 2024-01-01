@@ -1,6 +1,6 @@
 node_modules
 Dockerfile
-nginx.conf
 docker-compose.yml
-vendor
-database/database.sqilte
+assets
+.github
+tests
