@@ -4,3 +4,4 @@ docker-compose.yml
 assets
 .github
 tests
+database

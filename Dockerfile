@@ -48,6 +48,8 @@ USER mokintoken
 
 
 EXPOSE 8080
+ENV CLEARNET "https://mokintoken.ramsay.xzy"
+ENV DARKENT "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion"
 ENTRYPOINT ["/mokintoken"]
 VOLUME /database/mokintoken.sqilte
 

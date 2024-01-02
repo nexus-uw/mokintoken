@@ -8,7 +8,7 @@ a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, roll
 
 [announcement blog post](https://ramsay.xyz/2020/03/27/mokintoken-released.html)
 
-### updated 
+### 2024 update
 
 using golang as server -> TODO blog
 
@@ -21,9 +21,7 @@ using golang as server -> TODO blog
 ## how to self host
 
 ```
-touch database.sqlite
-docker run -v `pwd`/database.sqlite:/var/www/database/database.sqlite nexusuw/mokintoken php artisan migrate
-docker run -p 8080:8080 -v `pwd`/database.sqlite:/var/www/database/database.sqlite nexusuw/mokintoken
+docker run -p 8080:8080 -v `pwd`/mokintoken.sqilte:/database/mokintoken.sqilte nexusuw/mokintoken
 ```
 
 ## todo
