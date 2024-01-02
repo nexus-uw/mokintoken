@@ -18,6 +18,7 @@ RUN apk add --no-cache \
 
 # Force the go compiler to use modules
 ENV GO111MODULE=on
+ENV GOOS=linux
 # Create the user and group files to run unprivileged 
 RUN mkdir /user && \
     echo 'mokintoken:x:65534:65534:mokintoken:/:' > /user/passwd && \
@@ -26,31 +27,42 @@ RUN mkdir /user && \
 RUN apk update && apk add --no-cache git ca-certificates tzdata  gcc g++  openssh-client
 
 RUN mkdir /build 
-COPY . /build/
-WORKDIR /build 
+WORKDIR /build
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+
+RUN mkdir database && touch database/mokintoken.sqlite
+
+COPY healthcheck ./healthcheck
+RUN go build -o healthcheckCommand ./healthcheck/main.go
+
+COPY *.go ./
 RUN go get ./
 
-RUN go build -o mokintoken .
+RUN go build -o mokintoken ./mokintoken.go
 
 # FROM scratch AS final would be nice, ned cgo for sqlite3 lib
-FROM alpine AS final
+FROM alpine:3.18 AS final
 LABEL author="John Cena"
-RUN apk add  --no-cache  curl
+WORKDIR /app
+
 # Import the user and group files
 COPY --from=GOBUILD /user/group /user/passwd /etc/
-COPY --from=GOBUILD /build/mokintoken /
-COPY --from=GOBUILD --chown=mokintoken:mokintoken /build/database /database
-COPY --from=JSBUILD  assets/* /assets/
-COPY ./views /views
+COPY --from=GOBUILD  /build/mokintoken ./
+COPY --from=GOBUILD  /build/healthcheckCommand ./
+COPY --from=GOBUILD --chown=mokintoken:mokintoken /build/database ./database
+COPY --from=JSBUILD  assets/* ./assets/
+COPY ./views ./views
 
-WORKDIR /
-USER mokintoken
+USER mokintoken:mokintoken
 
 
 EXPOSE 8080
 ENV CLEARNET "https://mokintoken.ramsay.xzy"
 ENV DARKENT "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion"
-ENTRYPOINT ["/mokintoken"]
-VOLUME /database/mokintoken.sqilte
+ENTRYPOINT ["/app/mokintoken"]
+VOLUME /app/database/mokintoken.sqilte
 
-HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "curl --fail http://localhost:8080/ping || exit 1 " ] # todo: write basic checker in go
+HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheck" ] 

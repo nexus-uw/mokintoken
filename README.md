@@ -31,7 +31,6 @@ docker run -p 8080:8080 -v `pwd`/mokintoken.sqilte:/database/mokintoken.sqilte n
 - password protect notes (double encryption but stops someone from stumbling onto the contents if they just have the url)
 - ratelimit
 - allow uploading of images/files
-- turn off server logging?
 - inline CSP to html
 - load test
 - generate sha-BLAH during build and include in csp

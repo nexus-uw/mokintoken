@@ -3,5 +3,5 @@ Dockerfile
 docker-compose.yml
 assets
 .github
-tests
 database
+mokintoken
