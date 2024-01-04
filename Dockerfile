@@ -65,4 +65,4 @@ ENV DARKNET "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.oni
 ENTRYPOINT ["/app/mokintoken"]
 VOLUME /app/database/mokintoken.sqlite
 
-HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheck" ] 
+HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheckCommand" ] 
