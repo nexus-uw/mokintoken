@@ -60,9 +60,9 @@ USER mokintoken:mokintoken
 
 
 EXPOSE 8080
-ENV CLEARNET "https://mokintoken.ramsay.xzy"
-ENV DARKENT "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion"
+ENV CLEARNET "https://mokintoken.ramsay.xyz"
+ENV DARKNET "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion"
 ENTRYPOINT ["/app/mokintoken"]
-VOLUME /app/database/mokintoken.sqilte
+VOLUME /app/database/mokintoken.sqlite
 
 HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheck" ] 

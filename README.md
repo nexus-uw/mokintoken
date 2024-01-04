@@ -21,13 +21,14 @@ using golang as server -> TODO blog
 ## how to self host
 
 ```
-docker run -p 8080:8080 -v `pwd`/mokintoken.sqilte:/database/mokintoken.sqilte nexusuw/mokintoken
+touch mokintoken.sqlite
+docker run -p 8080:8080 -v `pwd`/mokintoken.sqlite:/app/database/mokintoken.sqlite -e CLEANET=yoursite.af -e DARKNET=onion nexusuw/mokintoken
 ```
 
 ## todo
 
 - csrf
-- slim down docker container size
+- slim down docker container size (more)
 - password protect notes (double encryption but stops someone from stumbling onto the contents if they just have the url)
 - ratelimit
 - allow uploading of images/files
