@@ -1,45 +1,68 @@
-FROM --platform=$BUILDPLATFORM node:14-alpine as JSBUILD
+FROM --platform=$BUILDPLATFORM node:20-alpine as JSBUILD
 COPY package.json package-lock.json rollup.config.js ./
 RUN npm ci
 COPY resources/js resources/js
 RUN npm run build
 
-FROM  --platform=$TARGETPLATFORM php:7-apache as MAIN
+FROM  --platform=$TARGETPLATFORM golang:1.21-alpine3.18 as GOBUILD
 
-# Use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+# Important:
+#   Because this is a CGO enabled package, you are required to set it as 1.
+ENV CGO_ENABLED=1
 
-# Copy composer.lock and composer.json
-COPY composer.lock composer.json /var/www/
+RUN apk add --no-cache \
+    # Important: required for go-sqlite3
+    gcc \
+    # Required for Alpine
+    musl-dev
 
-# Set working directory
-WORKDIR /var/www
+# Force the go compiler to use modules
+ENV GO111MODULE=on
+ENV GOOS=linux
+# Create the user and group files to run unprivileged 
+RUN mkdir /user && \
+    echo 'mokintoken:x:65534:65534:mokintoken:/:' > /user/passwd && \
+    echo 'mokintoken:x:65534:' > /user/group
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
-  curl git zip unzip
+RUN apk update && apk add --no-cache git ca-certificates tzdata  gcc g++  openssh-client
 
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN mkdir /build 
+WORKDIR /build
 
-#change to run on 8080 so that non-root user can start the server.
-COPY mokintoken.conf /etc/apache2/sites-available/000-default.conf
-RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf
-# https://www.digitalocean.com/community/questions/why-do-my-laravel-routes-not-work
-RUN  a2enmod rewrite
-
-RUN groupadd -g 1000 mokintoken
-RUN useradd -u 1000 -ms /bin/bash -g mokintoken mokintoken
-
-COPY --chown=mokintoken:mokintoken . .
-RUN composer install
-COPY --from=JSBUILD --chown=mokintoken:mokintoken public/* public/
-RUN apt-get remove -y curl git zip unzip && apt-get clean && rm -rf /var/lib/apt/lists/*
+COPY go.mod go.sum ./
+RUN go mod download
 
 
+RUN mkdir database && touch database/mokintoken.sqlite
 
-ENV APACHE_RUN_USER=mokintoken
-USER mokintoken
+COPY healthcheck ./healthcheck
+RUN go build -o healthcheckCommand ./healthcheck/main.go
+
+COPY *.go ./
+RUN go get ./
+
+RUN go build -o mokintoken ./mokintoken.go
+
+# FROM scratch AS final would be nice, ned cgo for sqlite3 lib
+FROM alpine:3.18 AS final
+LABEL author="John Cena"
+WORKDIR /app
+
+# Import the user and group files
+COPY --from=GOBUILD /user/group /user/passwd /etc/
+COPY --from=GOBUILD  /build/mokintoken ./
+COPY --from=GOBUILD  /build/healthcheckCommand ./
+COPY --from=GOBUILD --chown=mokintoken:mokintoken /build/database ./database
+COPY --from=JSBUILD  assets/* ./assets/
+COPY ./views ./views
+
+USER mokintoken:mokintoken
+
 
 EXPOSE 8080
-VOLUME /var/www/database/database.sqilte
+ENV CLEARNET "https://mokintoken.ramsay.xyz"
+ENV DARKNET "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.onion"
+ENTRYPOINT ["/app/mokintoken"]
+VOLUME /app/database/mokintoken.sqlite
+
+HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheckCommand" ] 

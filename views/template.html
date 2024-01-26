@@ -1,0 +1,44 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>MokinToken: secure note sharing for the 2077 normalization</title>
+  <meta name="description" content="selfhosted e2e encrypted note sharing webapp" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- todo param -->
+  <meta name="clearnet" content="{{.Clearnet}}">
+  <meta name="darknet" content="{{.Darknet}}">
+  
+  <link rel="stylesheet" href="/assets/tachyons.min.css" />
+  <meta charset="utf-8" />
+
+  <style>
+    #share {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="code ">
+  <noscript>JS is required to do anything with this site...</noscript>
+  <div class="center measure-wide">
+    <h1 class="f-subheadline-ns f1  lh-solid mt0 mb3">MokinToken</h1>
+    <h2 class=" mt0 fw3">secure note sharing for the 2077 normalization</h2>
+    <a href="/">home</a>
+    <a href="/about">about</a>
+
+    <div class="container">
+      {{template "content" .}}
+    </div>
+  </div>
+  <footer class="pv4 mv4 bt center tc">
+
+  </footer>
+  <script type="module" src="/assets/index.js"></script>
+</body>
+
+</html>
+
+{{end}}

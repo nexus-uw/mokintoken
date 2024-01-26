@@ -1,8 +1,0 @@
-@extends('layouts.app')
-
-
-@section('content')
-<main>
-<h1 class="tc f1 pv6">NOTE DOES NOT EXIST OR HAS EXPIRED</h1>
-</main>
-@endsection
