@@ -22,6 +22,7 @@ using golang as server -> TODO blog
 
 ```
 touch mokintoken.sqlite
+chown 65534:65534 mokintoken.sqlite
 docker run -p 8080:8080 -v `pwd`/mokintoken.sqlite:/app/database/mokintoken.sqlite -e CLEANET=yoursite.af -e DARKNET=onion nexusuw/mokintoken
 ```
 
