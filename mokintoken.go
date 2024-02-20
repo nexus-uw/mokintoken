@@ -122,6 +122,16 @@ func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		"./views/noteDoesNotExist.html",
 	)
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		// https://github.com/signalapp/Signal-Android/issues/9958
+		if strings.Contains(strings.ToLower(r.Header.Get("User-Agent")), "whatsapp") {
+			log.Print("403 - whatsapp/signal")
+			w.WriteHeader(http.StatusForbidden)
+			ts1.ExecuteTemplate(w, "base", DecryptTemplateContext{})
+			return
+		}
+
+
 		ff := strings.Split(r.URL.Path, "/")
 		id := ff[len(ff)-1]
 		note, err := lookUpNote(db, id)
