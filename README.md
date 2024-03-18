@@ -10,7 +10,7 @@ a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, roll
 
 ### 2024 update
 
-using golang as server -> TODO blog
+[using golang as server](https://ramsay.xyz/2024/02/19/mokintoken-is-now-go.html)
 
 ## where
 
