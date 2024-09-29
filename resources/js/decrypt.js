@@ -25,7 +25,9 @@ export class Decrypt {
     this.text = document.getElementById('text')
 
     this.encryptedtext = document.getElementById('encryptedtext')
+    this.encryptedImg = document.getElementById('encryptedImg')
     this.decryptedtext = document.getElementById('decryptedtext')
+
 
     const { nonce, key } = this.loadNonceAndKey()
 
@@ -37,5 +39,18 @@ export class Decrypt {
         key
       )
     )
+
+    if (this.encryptedImg.innerText.length > 0) {
+      const unencryptedImg = naclUutil.encodeUTF8(
+        nacl.secretbox.open(
+          naclUutil.decodeBase64(this.encryptedImg.innerText),
+          nonce,
+          key
+        )
+      )
+      const img = document.createElement('img')
+      img.src = unencryptedImg
+      document.getElementById('decryptedImg').appendChild(img)
+    }
   }
 }

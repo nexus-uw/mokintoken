@@ -1,9 +1,11 @@
 {{define "content"}}
 <div class="pb7">
   <textarea id="encryptedtext" name="encryptedtext" style="display:none;">{{.EncryptedText}}</textarea>
+  <span id="encryptedImg" name="encryptedImg" style="display: none;">{{.EncryptedImg}}</span>
   <div class="pa3 bg-white black br2">
     <h4>Decrypted Text</h4>
     <p id="decryptedtext" readonly="true" class="w-100 ba bw2 b--black-30"></p>
+    <div id="decryptedImg"></div>
   </div>
 </div>
 {{end}}

@@ -22,12 +22,13 @@ type Note struct {
 	expiry        time.Time
 	expiresViews  int
 	viewCount     int
+	encryptedImg  string
 }
 
 func lookUpNote(db *sql.DB, id string) (Note, error) {
-	row := db.QueryRow(`SELECT encryptedText, expiry, expiresViews, viewCount  
-	FROM notes 
-	WHERE id = ? 
+	row := db.QueryRow(`SELECT encryptedText, expiry, expiresViews, viewCount, encryptedImg
+	FROM notes
+	WHERE id = ?
 	LIMIT 1`, id)
 	// todo cleanly account for NOT FOUND
 	var (
@@ -35,8 +36,9 @@ func lookUpNote(db *sql.DB, id string) (Note, error) {
 		expiry        time.Time
 		expiresViews  int
 		viewCount     int
+		encryptedImg  string
 	)
-	err := row.Scan(&encryptedText, &expiry, &expiresViews, &viewCount)
+	err := row.Scan(&encryptedText, &expiry, &expiresViews, &viewCount, &encryptedImg)
 
 	if err == sql.ErrNoRows {
 		return Note{}, err
@@ -45,7 +47,7 @@ func lookUpNote(db *sql.DB, id string) (Note, error) {
 		panic(err)
 	}
 
-	return Note{id, encryptedText, expiry, expiresViews, viewCount}, nil
+	return Note{id, encryptedText, expiry, expiresViews, viewCount, encryptedImg}, nil
 
 }
 
@@ -65,10 +67,10 @@ func deleteNote(db *sql.DB, id string) {
 	}
 }
 
-func saveNote(db *sql.DB, encryptedText string, expiry time.Time, expiresViews int) string {
+func saveNote(db *sql.DB, encryptedText string, expiry time.Time, expiresViews int, encryptedImg string) string {
 	var id = uuid.New().String()
 
-	_, err := db.Exec("INSERT INTO Notes (id, encryptedText, expiry, expiresViews, viewCount) VALUES (?,?, ?,?,?)", id, encryptedText, expiry, expiresViews, 0)
+	_, err := db.Exec("INSERT INTO Notes (id, encryptedText, expiry, expiresViews, viewCount, encryptedImg) VALUES (?,?,?,?,?,?)", id, encryptedText, expiry, expiresViews, 0, encryptedImg)
 
 	if err != nil {
 		panic(err)
@@ -109,6 +111,7 @@ type DecryptTemplateContext struct {
 	Clearnet      string
 	Darknet       string
 	EncryptedText string
+	EncryptedImg  string
 }
 
 func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
@@ -130,7 +133,6 @@ func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			ts1.ExecuteTemplate(w, "base", DecryptTemplateContext{})
 			return
 		}
-
 
 		ff := strings.Split(r.URL.Path, "/")
 		id := ff[len(ff)-1]
@@ -156,7 +158,7 @@ func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = ts.ExecuteTemplate(w, "base", DecryptTemplateContext{os.Getenv("CLEARNET"), os.Getenv("DARKNET"), note.encryptedText})
+		err = ts.ExecuteTemplate(w, "base", DecryptTemplateContext{os.Getenv("CLEARNET"), os.Getenv("DARKNET"), note.encryptedText, note.encryptedImg})
 		if err != nil {
 			log.Print(err.Error())
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -168,6 +170,7 @@ type NewNote struct {
 	EncryptedText string `json:"encryptedText"`
 	ExpiresHours  string `json:"expiresHours"`
 	ExpiresViews  string `json:"expiresViews"`
+	EncryptedImg  string `json:"encryptedImg"`
 }
 
 func saveNoteHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
@@ -180,10 +183,14 @@ func saveNoteHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			panic(err)
 		}
+		var MAX_FILE_SIZE = 5000000
+		if len(t.EncryptedImg) > MAX_FILE_SIZE /*max img size - could be a config param*/ {
+			http.Error(w, "img too big (after encryption)", http.StatusBadRequest)
+		}
 		views, _ := strconv.Atoi(t.ExpiresViews)
-		expiryHours, _ := strconv.Atoi(t.ExpiresHours)
+		expiryHours, _ := strconv.Atoi(t.ExpiresHours) // should set a max age on this
 		expiry := time.Now().Add(time.Hour * time.Duration(expiryHours))
-		id := saveNote(db, t.EncryptedText, expiry, views)
+		id := saveNote(db, t.EncryptedText, expiry, views, t.EncryptedImg)
 		w.Header().Set("Content-Type", "application/json")
 
 		fmt.Fprintf(w, "{\"id\":\"%s\"}", id) // todo: do real encoding + proper json
@@ -203,14 +210,19 @@ func ping(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 }
 
 func setUpDB(db *sql.DB) {
-	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS Notes
+	var err error
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS Notes
 	(id TEXT PRIMARY KEY,
 	encryptedText TEXT NOT NULL,
 	expiry DATETIME NOT NULL,
 	expiresViews INT DEFAULT 1,
 	viewCount INT DEFAULT 0)`)
-	// todo: come up with migration process
+	// todo: come up with migration process/ lol whats that?
 	if err != nil {
+		panic(err)
+	}
+	_, err = db.Exec(`ALTER TABLE Notes ADD COLUMN encryptedImg;`)
+	if err != nil && err.Error() != `duplicate column name: encryptedImg` {
 		panic(err)
 	}
 }

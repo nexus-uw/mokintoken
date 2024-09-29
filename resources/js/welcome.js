@@ -3,6 +3,18 @@ import naclUutil from 'tweetnacl-util'
 import { Base64 } from 'js-base64'
 import QRCode from 'qrcode'
 
+async function getImgBase64(ele) {
+  if (ele.files.length == 0) {
+    return null //img is optional
+  }
+  const reader = new FileReader()
+  reader.readAsDataURL(ele.files[0])
+  return new Promise((resolve, reject) => {
+    reader.onloadend = () => resolve(reader.result)
+    reader.onerror = (e) => reject(e)
+  })
+}
+
 export class Welcome {
   loadNonceAndKey() {
     window.location.hash = '' // clear out old key
@@ -24,6 +36,9 @@ export class Welcome {
       e.preventDefault()
       document.getElementById('submit').disabled = true
       try {
+
+        const imgBase64 = await getImgBase64(document.getElementById('img'))
+
         const f = await fetch('/api/save-note', {
           method: 'POST',
           headers: {
@@ -37,6 +52,13 @@ export class Welcome {
                 key
               )
             ),
+            encryptedImg: imgBase64 != null ? naclUutil.encodeBase64(
+              nacl.secretbox(
+                naclUutil.decodeUTF8(imgBase64),
+                nonce,
+                key
+              )
+            ) : null,
             expiresHours: document.getElementById('expiresHours').value,
             expiresViews: document.getElementById('expiresViews').value
           })
@@ -63,7 +85,7 @@ export class Welcome {
           QRCode.toCanvas(document.getElementById('darknetShareQR'), dakrnetShareLink)
         ])
       } catch (e) {
-         alert('failed to save note: ' + e)
+        alert('failed to save note: ' + e)
       }
       document.getElementById('submit').disabled = false
       return false

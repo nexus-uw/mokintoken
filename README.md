@@ -4,7 +4,7 @@
 
 ## what
 
-a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, rollup, and docker.
+a clientside encrypted note sharing webapp. built with ~~php7, Lumen~~ Go, sqlite, rollup, and docker.
 
 [announcement blog post](https://ramsay.xyz/2020/03/27/mokintoken-released.html)
 
@@ -24,6 +24,14 @@ a clientside encrypted note sharing webapp. built with php7, Lumen, sqlite, roll
 touch mokintoken.sqlite
 chown 65534:65534 mokintoken.sqlite
 docker run -p 8080:8080 -v `pwd`/mokintoken.sqlite:/app/database/mokintoken.sqlite -e CLEANET=yoursite.af -e DARKNET=onion nexusuw/mokintoken
+```
+
+## local dev
+```
+npm i && npm run build
+touch database/mokintoken.sqlite
+go build && ./main
+
 ```
 
 ## todo
