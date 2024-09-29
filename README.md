@@ -40,7 +40,8 @@ go build && ./main
 - slim down docker container size (more)
 - password protect notes (double encryption but stops someone from stumbling onto the contents if they just have the url)
 - ratelimit
-- allow uploading of images/files
+- allow uploading of ~~images~~/files
 - inline CSP to html
 - load test
 - generate sha-BLAH during build and include in csp
+- [web share target](https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API)
