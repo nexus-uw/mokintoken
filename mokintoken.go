@@ -249,6 +249,7 @@ func main() {
 
 	http.HandleFunc("/", userViews("home"))
 	http.HandleFunc("/about", userViews("about"))
+	http.HandleFunc("/noteSaved", userViews("noteSaved"))
 	http.HandleFunc("/decrypt/", decryptHandler(db))
 	http.HandleFunc("/api/save-note", saveNoteHandler(db))
 	http.HandleFunc("/ping", ping(db))

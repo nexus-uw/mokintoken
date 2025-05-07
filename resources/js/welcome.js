@@ -17,7 +17,7 @@ async function getImgBase64(ele) {
 
 export class Welcome {
   loadNonceAndKey() {
-    window.location.hash = '' // clear out old key
+    //window.location.hash = '' // clear out old key
     // always generate new nonce
     const nonce = nacl.randomBytes(nacl.secretbox.nonceLength)
     const key = nacl.randomBytes(nacl.secretbox.keyLength)
