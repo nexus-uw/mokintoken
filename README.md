@@ -44,4 +44,4 @@ go build && ./main
 - inline CSP to html
 - load test
 - generate sha-BLAH during build and include in csp
-- [web share target](https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API)
+- [web share target](https://developer.mozilla.org/en-US/docs/Web/API/Web_Share_API). either have less secure server side encryption or use a service worker to intercept post req and perform the work there
