@@ -1,5 +1,5 @@
 FROM --platform=$BUILDPLATFORM node:20-alpine as JSBUILD
-COPY package.json package-lock.json rollup.config.js rollup-serviceworker.config.js./
+COPY package.json package-lock.json rollup.config.js rollup-serviceworker.config.js ./
 RUN npm ci
 COPY resources/js resources/js
 RUN npm run build
