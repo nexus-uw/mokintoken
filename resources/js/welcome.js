@@ -38,7 +38,7 @@ export class Welcome {
       try {
 
         const imgBase64 = await getImgBase64(document.getElementById('img'))
-
+        // maybe refactor this with service worker code
         const f = await fetch('/api/save-note', {
           method: 'POST',
           headers: {
