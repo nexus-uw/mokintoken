@@ -1,5 +1,5 @@
 FROM --platform=$BUILDPLATFORM node:20-alpine as JSBUILD
-COPY package.json package-lock.json rollup.config.js ./
+COPY package.json package-lock.json rollup.config.js rollup-serviceworker.config.js./
 RUN npm ci
 COPY resources/js resources/js
 RUN npm run build
@@ -19,14 +19,14 @@ RUN apk add --no-cache \
 # Force the go compiler to use modules
 ENV GO111MODULE=on
 ENV GOOS=linux
-# Create the user and group files to run unprivileged 
+# Create the user and group files to run unprivileged
 RUN mkdir /user && \
     echo 'mokintoken:x:65534:65534:mokintoken:/:' > /user/passwd && \
     echo 'mokintoken:x:65534:' > /user/group
 
 RUN apk update && apk add --no-cache git ca-certificates tzdata  gcc g++  openssh-client
 
-RUN mkdir /build 
+RUN mkdir /build
 WORKDIR /build
 
 COPY go.mod go.sum ./
@@ -65,4 +65,4 @@ ENV DARKNET "http://mokinan4qvxi4ragyzgkewrmnnqslkcdglk6v5zruknwnnuvv2lu5uad.oni
 ENTRYPOINT ["/app/mokintoken"]
 VOLUME /app/database/mokintoken.sqlite
 
-HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheckCommand" ] 
+HEALTHCHECK --interval=30s --timeout=1s --start-period=5s --retries=3 CMD [ "/app/healthcheckCommand" ]
