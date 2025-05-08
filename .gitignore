@@ -3,6 +3,7 @@
 node_modules
 public/*
 main
-assets
+assets/*
+!assets/manifest.json
 database
 mokintoken

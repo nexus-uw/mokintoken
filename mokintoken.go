@@ -235,6 +235,12 @@ func cleanUpDb(db *sql.DB) {
 	}
 }
 
+func serveSingle(pattern string, filename string) {
+    http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, filename)
+    })
+}
+
 func main() {
 
 	db, err := sql.Open("sqlite3", "./database/mokintoken.sqlite")
@@ -249,11 +255,15 @@ func main() {
 
 	http.HandleFunc("/", userViews("home"))
 	http.HandleFunc("/about", userViews("about"))
+	http.HandleFunc("/noteSaved", userViews("noteSaved"))
 	http.HandleFunc("/decrypt/", decryptHandler(db))
 	http.HandleFunc("/api/save-note", saveNoteHandler(db))
 	http.HandleFunc("/ping", ping(db))
 	// this should be handled by a cdn
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
+
+  serveSingle("/service-worker.js", "./assets/service-worker.js")
+
 
 	port := os.Getenv("PORT")
 	if port == "" {

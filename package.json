@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rollup --config && cp node_modules/tachyons/css/tachyons.min.css assets",
+    "build": "rollup --config && rollup --config rollup-serviceworker.config.js && cp node_modules/tachyons/css/tachyons.min.css assets",
     "dev": "rollup --config -w"
   },
   "author": "",
