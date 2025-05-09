@@ -15,10 +15,28 @@ jobs:
         uses: crazy-max/ghaction-docker-buildx@v1
         with:
           version: latest
+      - name: Go Build Cache for Docker
+        uses: actions/cache@v4
+        with:
+          path: go-build-cache
+          key: ${{ runner.os }}-go-build-cache-${{ hashFiles('**/go.sum') }}
+
+      - name: inject go-build-cache into docker
+        uses: reproducible-containers/buildkit-cache-dance@4b2444fec0c0fb9dbf175a96c094720a692ef810 # v2.1.4
+        with:
+          cache-source: go-build-cache
       - name: login to docker hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-      - name: build the image
-        run: |
-          docker buildx build \
-          --tag nexusuw/mokintoken:latest --push  \
-          --platform linux/amd64,linux/arm/v7,linux/arm64 .
+      # - name: build the image
+      #   run: |
+      #     docker buildx build \
+      #     --tag nexusuw/mokintoken:latest --push  \
+      #     --platform linux/amd64,linux/arm/v7,linux/arm64 .
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: nexusuw/mokintoken:latest
+          platforms: linux/amd64,linux/arm64
