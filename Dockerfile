@@ -53,6 +53,7 @@ COPY --from=GOBUILD /user/group /user/passwd /etc/
 COPY --from=GOBUILD  /build/mokintoken ./
 COPY --from=GOBUILD  /build/healthcheckCommand ./
 COPY --from=GOBUILD --chown=mokintoken:mokintoken /build/database ./database
+COPY assets/* ./assets/
 COPY --from=JSBUILD  assets/* ./assets/
 COPY ./views ./views
 
