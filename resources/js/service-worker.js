@@ -60,7 +60,7 @@ self.addEventListener("fetch", (event) => {
         })
       )
       // respond with saved note page
-      return Response.redirect(`/noteSaved?id=${id}#${hash}`, 303)
+      return Response.redirect(`/noteSaved#id=${id}&hash=${hash}`, 303)
     })(),
   )
 })
