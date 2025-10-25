@@ -84,6 +84,27 @@ export class Welcome {
           QRCode.toCanvas(document.getElementById('clearnetShareQR'), clearnetShareLink),
           QRCode.toCanvas(document.getElementById('darknetShareQR'), dakrnetShareLink)
         ])
+
+        document.getElementById("clearnetShareLink").addEventListener("click", async (event) => {
+          if (navigator.share) {
+            event.preventDefault()
+            // not defined for all browsers
+            await navigator.share({
+              url: clearnetShareLink
+            })
+
+          }
+        })
+
+        document.getElementById("dakrnetShareLink").addEventListener("click", async (event) => {
+          if (navigator.share) {
+            event.preventDefault()
+            // not defined for all browsers
+            await navigator.share({
+              url: dakrnetShareLink
+            })
+          }
+        })
       } catch (e) {
         alert('failed to save note: ' + e)
       }
