@@ -44,7 +44,7 @@ RUN go get ./
 RUN go build -o mokintoken ./mokintoken.go
 
 # FROM scratch AS final would be nice, ned cgo for sqlite3 lib
-FROM alpine:3.18 AS final
+FROM alpine:latest AS final
 LABEL author="John Cena"
 WORKDIR /app
 
