@@ -1,10 +1,10 @@
-FROM --platform=$BUILDPLATFORM node:20-alpine as JSBUILD
+FROM --platform=$BUILDPLATFORM node:24-alpine as JSBUILD
 COPY package.json package-lock.json rollup.config.js rollup-serviceworker.config.js ./
 RUN npm ci
 COPY resources/js resources/js
 RUN npm run build
 
-FROM  --platform=$TARGETPLATFORM golang:1.21-alpine3.18 as GOBUILD
+FROM  --platform=$TARGETPLATFORM golang1.26.3-alpine3.23 as GOBUILD
 
 # Important:
 #   Because this is a CGO enabled package, you are required to set it as 1.
