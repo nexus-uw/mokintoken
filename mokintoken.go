@@ -125,6 +125,9 @@ func decryptHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		"./views/noteDoesNotExist.html",
 	)
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, private")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
 
 		// https://github.com/signalapp/Signal-Android/issues/9958
 		if strings.Contains(strings.ToLower(r.Header.Get("User-Agent")), "whatsapp") {
